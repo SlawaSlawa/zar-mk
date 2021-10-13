@@ -52,8 +52,6 @@ function createPlayer(className, player) {
 	divCharacterEl.appendChild(imgPlayerEl);
 
 	divArenasEl.appendChild(divPlayerEl);
-
-	console.log(divArenasEl);
 }
 
 createPlayer('player1', player1);
