@@ -1,6 +1,9 @@
 'use strict';
+const divArenasEl = document.querySelector('.arenas');
+const randomBtnEl = document.querySelector('.button');
 
 const player1 = {
+	player: 1,
 	name: 'SCORPION',
 	hp: 100,
 	img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
@@ -11,6 +14,7 @@ const player1 = {
 };
 
 const player2 = {
+	player: 2,
 	name: 'SUB-ZERO',
 	hp: 100,
 	img: 'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
@@ -20,39 +24,89 @@ const player2 = {
 	}
 };
 
-const divArenasEl = document.querySelector('.arenas');
 
-function createPlayer(className, player) {
-	const divPlayerEl = document.createElement('div');
-	divPlayerEl.classList.add(className);
+function createElement(tag, className) {
+	const element = document.createElement(tag);
 
-	const divProgressbarEl = document.createElement('div');
-	divProgressbarEl.classList.add('progressbar');
+	if (className) {
+		element.classList.add(className);
+	}
 
-	const divCharacterEl = document.createElement('div');
-	divCharacterEl.classList.add('character');
+	return element;
+}
 
-	const divLifeEl = document.createElement('div');
-	divLifeEl.classList.add('life');
-	divLifeEl.style.width = player.hp + '%';
+function createPlayer(playerObj) {
+	const divPlayerEl = createElement('div', 'player' + playerObj.player);
+	const divProgressbarEl = createElement('div', 'progressbar');
+	const divCharacterEl = createElement('div', 'character');
+	const divLifeEl = createElement('div', 'life');
+	divLifeEl.style.width = playerObj.hp + '%';
 
-	const divNameEl = document.createElement('div');
-	divNameEl.classList.add('name');
-	divNameEl.innerText = player.name;
+	const divNameEl = createElement('div', 'name');
+	divNameEl.innerText = playerObj.name;
 
-	const imgPlayerEl = document.createElement('img');
-	imgPlayerEl.src = player.img;
-
-	divPlayerEl.appendChild(divProgressbarEl);
-	divPlayerEl.appendChild(divCharacterEl);
+	const imgPlayerEl = createElement('img');
+	imgPlayerEl.src = playerObj.img;
+	imgPlayerEl.alt = playerObj.name;
 
 	divProgressbarEl.appendChild(divLifeEl);
 	divProgressbarEl.appendChild(divNameEl);
 
 	divCharacterEl.appendChild(imgPlayerEl);
 
-	divArenasEl.appendChild(divPlayerEl);
+
+	divPlayerEl.appendChild(divProgressbarEl);
+	divPlayerEl.appendChild(divCharacterEl);
+
+	return divPlayerEl;
 }
 
-createPlayer('player1', player1);
-createPlayer('player2', player2);
+function changeHP(player) {
+	const playerLife = document.querySelector('.player' + player.player + ' .life');
+	player.hp -= getHP();
+	playerLife.style.width = player.hp + '%';
+
+	if (player.hp < 0) {
+		randomBtnEl.removeEventListener('click', getAttack);
+		player.hp = 0;
+		playerLife.style.width = player.hp + '%';
+		randomBtnEl.disabled = true;
+		randomBtnEl.style.background = '#a99108';
+			if (player.player === 1) {
+				divArenasEl.appendChild(getResultToFight(player2.name));
+			}else {
+				divArenasEl.appendChild(getResultToFight(player1.name));
+			}
+console.log(divArenasEl.querySelectorAll('.winTitle').length);
+			if (divArenasEl.querySelectorAll('.winTitle').length > 1) {
+				getResultToFight('Friendship');
+			}
+	}
+}
+
+function getResultToFight(name) {
+	const winTitle = createElement('div', 'winTitle');
+	if (name !== 'Friendship') {
+		winTitle.innerText = name + ' win';
+	}else {
+		winTitle.innerText = '';
+		winTitle.innerText = 'Friendship';
+	}
+
+	return winTitle;
+}
+
+function getHP() {
+	return Math.ceil(Math.random() * 20);
+}
+
+function getAttack() {
+	changeHP(player1);
+	changeHP(player2);
+}
+
+randomBtnEl.addEventListener('click', getAttack);
+
+divArenasEl.appendChild(createPlayer(player1));
+divArenasEl.appendChild(createPlayer(player2));
+
